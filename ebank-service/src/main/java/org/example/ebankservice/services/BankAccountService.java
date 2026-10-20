@@ -4,6 +4,8 @@ import org.example.ebankservice.entities.BankAccount;
 import org.example.ebankservice.entities.model.Customer;
 import org.example.ebankservice.feign.CustomerRestClient;
 import org.example.ebankservice.repositories.BankAccountRepository;
+import org.springframework.ai.mcp.annotation.McpTool;
+import org.springframework.ai.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,11 +24,13 @@ public class BankAccountService {
         return bankAccountRepository.findByCustomerId(customerId);
     }
 
+    @McpTool(description = "Get all bank accounts")
     public List<BankAccount> getAllBankAccounts() {
         return bankAccountRepository.findAll();
     }
 
-    public BankAccount getBankAccountById(Long id) {
+    @McpTool(description = "Get bank account by ID")
+    public BankAccount getBankAccountById(@McpToolParam(description = "ID of the bank account") Long id) {
         BankAccount bankAccount = bankAccountRepository.findById(id).orElse(null);
         if (bankAccount != null && bankAccount.getCustomerId() != null) {
             bankAccount.setCustomer(customerRestClient.getCustomerById(bankAccount.getCustomerId()));
@@ -34,7 +38,8 @@ public class BankAccountService {
         return bankAccount;
     }
 
-    public BankAccount addBankAccount(BankAccount bankAccount) {
+    @McpTool(description = "add new bank account")
+    public BankAccount addBankAccount(@McpToolParam(description = "Bank account to add (balance, type, customer)") BankAccount bankAccount) {
         Customer customer = customerRestClient.getCustomerById(bankAccount.getCustomerId());
         if (customer == null) {
             throw new RuntimeException("Customer not found");

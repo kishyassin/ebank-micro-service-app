@@ -24,7 +24,7 @@ public class CustomerRestController {
     }
 
     @PostMapping("/customers")
-    public void addCustomer(@RequestBody Customer customer){
-        customerService.addCustomer(customer);
+    public Customer addCustomer(@RequestBody Customer customer){
+        return customerService.addCustomer(customer);
     }
 }
